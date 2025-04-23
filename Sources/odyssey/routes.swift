@@ -35,6 +35,20 @@ func routes(_ app: Application) throws {
     passwordProtected.post("login") { req async throws -> User in
         try req.auth.require(User.self)
     }
+    
+    // Logging in with token
+    passwordProtected.post("login") { req async throws -> UserToken in
+        let user = try req.auth.require(User.self)
+        let token = try user.generateToken()
+        try await token.save(on: req.db)
+        return token
+    }
+    
+    // Token Protected Group
+    let tokenProtected = app.grouped(UserToken.authenticator())
+    tokenProtected.get("me") { req async throws -> User in
+        try req.auth.require(User.self)
+    }
 }
 
 
