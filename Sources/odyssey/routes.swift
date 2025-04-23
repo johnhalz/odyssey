@@ -2,12 +2,8 @@ import Fluent
 import Vapor
 
 func routes(_ app: Application) throws {
-    app.get { req async in
-        "It works!"
-    }
-
-    app.get("hello") { req async -> String in
-        "Hello, world!"
+    app.get("is_running") { req async -> String in
+        "Odyssey 0.1.0 is running."
     }
 
     try app.register(collection: TodoController())
@@ -39,7 +35,7 @@ func routes(_ app: Application) throws {
     // Logging in with token
     passwordProtected.post("login") { req async throws -> UserToken in
         let user = try req.auth.require(User.self)
-        let token = try user.generateToken()
+        let token = try await user.generateToken()
         try await token.save(on: req.db)
         return token
     }

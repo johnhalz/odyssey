@@ -42,7 +42,7 @@ extension User: ModelAuthenticatable {
 }
 
 extension User {
-    func generateToken() throws -> UserToken {
+    func generateToken() async throws -> UserToken {
         try .init(
             value: [UInt8].random(count: 64).base64,
             userID: self.requireID()
