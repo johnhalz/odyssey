@@ -14,6 +14,9 @@ final class UserToken: Model, Content, @unchecked Sendable {
     @ID(key: .id)
     var id: UUID?
     
+    @Field(key: "token_prefix")
+    var tokenPrefix: String
+    
     @Field(key: "value")
     var value: String
     
@@ -22,8 +25,9 @@ final class UserToken: Model, Content, @unchecked Sendable {
     
     init() { }
     
-    init(id: UUID? = nil, value: String, userID: User.IDValue) {
+    init(id: UUID? = nil, tokenPrefix: String, value: String, userID: User.IDValue) {
         self.id = id
+        self.tokenPrefix = tokenPrefix
         self.value = value
         self.$user.id = userID
     }

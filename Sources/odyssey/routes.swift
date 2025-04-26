@@ -5,8 +5,6 @@ func routes(_ app: Application) throws {
     app.get("is_running") { req async -> String in
         "Odyssey 0.1.0 is running."
     }
-
-    try app.register(collection: TodoController())
     
     // User
     app.post("users") { req async throws -> User in
@@ -35,16 +33,14 @@ func routes(_ app: Application) throws {
     // Logging in with token
     passwordProtected.post("login") { req async throws -> UserToken in
         let user = try req.auth.require(User.self)
-        let token = try await user.generateToken()
-        try await token.save(on: req.db)
-        return token
+        let (hashedToken, rawToken) = try await user.createToken()
+        try await hashedToken.save(on: req.db)
+        return rawToken
     }
     
     // Token Protected Group
-    let tokenProtected = app.grouped(UserToken.authenticator())
+    let tokenProtected = app.grouped(UserTokenAuthenticator())
     tokenProtected.get("me") { req async throws -> User in
         try req.auth.require(User.self)
     }
 }
-
-

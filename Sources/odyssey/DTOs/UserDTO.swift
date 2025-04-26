@@ -42,10 +42,23 @@ extension User: ModelAuthenticatable {
 }
 
 extension User {
-    func generateToken() async throws -> UserToken {
-        try .init(
-            value: [UInt8].random(count: 64).base64,
-            userID: self.requireID()
+    func createToken() async throws -> (UserToken, UserToken) {
+        let rawToken = [UInt8].random(count: 64).base64
+        let prefix = String(rawToken.prefix(10))
+        let hashedToken = try Bcrypt.hash(rawToken)
+
+        let hashedUserToken = UserToken(
+            tokenPrefix: prefix,
+            value: hashedToken,
+            userID: try self.requireID()
         )
+        
+        let rawUserToken = UserToken(
+            tokenPrefix: prefix,
+            value: rawToken,
+            userID: try self.requireID()
+        )
+        
+        return (hashedUserToken, rawUserToken)
     }
 }
