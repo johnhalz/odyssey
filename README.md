@@ -6,6 +6,8 @@
 <p align="center" >Modern cloud architecture for hardware production and testing</p>
 <p align="center" >💧 A project built with the Vapor web framework</p>
 
+[Link to Documentation](https://johnhalz.github.io/odyssey/)
+
 ## Running the Project Locally
 
 To build the project using the Swift Package Manager, run the following command in the terminal from the root of the project:
@@ -38,10 +40,3 @@ Run the following commands to create a new docker container with Postgres:
 ```shell
 docker run --name odyssey -e POSTGRES_PASSWORD=odysseypassword -d -p 5432:5432 postgres
 ```
-
-### See more
-
-- [Vapor Website](https://vapor.codes)
-- [Vapor Documentation](https://docs.vapor.codes)
-- [Vapor GitHub](https://github.com/vapor)
-- [Vapor Community](https://github.com/vapor-community)
