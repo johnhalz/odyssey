@@ -26,6 +26,9 @@ final class User: Model, Content, @unchecked Sendable {
     @Field(key: "password_hash")
     var passwordHash: String
     
+    @Siblings(through: UserGroupPivot.self, from: \.$user, to: \.$group)
+    var groups: [UserGroup]
+    
     init() { }
     
     init(id: UUID? = nil, firstName: String, lastName: String, email: String, passwordHash: String) {
