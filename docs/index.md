@@ -1,7 +1,7 @@
 # Odyssey Documentation
 
 ## Description
-Odyssey is a proposal for a modern database structure for hardware production. Thanks to it’s flexible structure, it can accommodate almost any hardware production line with the ability to:
+Odyssey is a proposal for a modern database structure for hardware production and testing. Thanks to it’s flexible structure, it can accommodate almost any hardware production or testing line with the ability to:
 
 - Save data about produced hardware
 - Keep track of progress
