@@ -20,9 +20,9 @@ final class UserGroupPivot: Model, @unchecked Sendable {
     @Parent(key: "user_group_id")
     var group: UserGroup
 
-    init() {}
+    init() { }
 
-    init(id: UUID? = nil, userID: UUID, groupID: UUID) {
+    init(id: UUID? = nil, userID: User.IDValue, groupID: UserGroup.IDValue) {
         self.id = id
         self.$user.id = userID
         self.$group.id = groupID
