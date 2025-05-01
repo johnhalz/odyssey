@@ -6,7 +6,6 @@
 //
 
 import Fluent
-import Vapor
 
 extension UserGroup {
     struct Migration: AsyncMigration {

@@ -6,7 +6,6 @@
 //
 
 import Fluent
-import Vapor
 
 extension UserGroupPivot {
     struct Migration: AsyncMigration {
