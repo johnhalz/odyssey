@@ -22,7 +22,8 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(UserGroup.Migration())
     app.migrations.add(UserGroupPivot.Migration())
     app.migrations.add(SeedUserGroups())
-    app.migrations.add(CreateUnitRecord())
+    app.migrations.add(UnitRecord.Migration())
+    app.migrations.add(Value.Migration())
 
     // register routes
     try routes(app)
