@@ -12,12 +12,6 @@ extension Value {
         var name: String { "CreateValue" }
         
         func prepare(on database: any Database) async throws {
-            try await database.enum("value_type")
-                .case("string")
-                .case("integer")
-                .case("decimal")
-                .case("array")
-                .create()
             
             try await database.schema(Value.schema)
                 .id()
@@ -31,7 +25,6 @@ extension Value {
         
         func revert(on database: any Database) async throws {
             try await database.schema(Value.schema).delete()
-            try await database.enum("value_type").delete()
         }
     }
 }
