@@ -24,6 +24,7 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(SeedUserGroups())
     app.migrations.add(UnitRecord.Migration())
     app.migrations.add(Value.Migration())
+    app.migrations.add(Range.Migration())
 
     // register routes
     try routes(app)
