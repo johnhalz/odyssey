@@ -24,6 +24,9 @@ final class Value: Model, Content, @unchecked Sendable {
     @Field(key: "string")
     var string: String?
     
+    @Field(key: "integer")
+    var integer: Int?
+    
     @Field(key: "decimal")
     var decimal: Decimal?
     
@@ -35,10 +38,11 @@ final class Value: Model, Content, @unchecked Sendable {
     
     init() {}
     
-    init(id: UUID? = nil, valueType: ValueType, string: String? = nil, decimal: Decimal? = nil, array: [Decimal]? = nil, unitID: UnitRecord.IDValue? = nil) {
+    init(id: UUID? = nil, valueType: ValueType, string: String? = nil, integer: Int? = nil, decimal: Decimal? = nil, array: [Decimal]? = nil, unitID: UnitRecord.IDValue? = nil) {
         self.id = id
         self.valueType = valueType
         self.string = string
+        self.integer = integer
         self.decimal = decimal
         self.array = array
         self.$unit.id = unitID
