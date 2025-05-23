@@ -8,7 +8,7 @@ copyright: Copyright &copy; 2025 John Halazonetis
 theme:
   name: material
   logo: img/logo_white.svg
-  favicon: img/logo.svg
+  favicon: img/logo_white.svg
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
