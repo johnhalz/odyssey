@@ -8,9 +8,7 @@
 import Fluent
 import Vapor
 
-protocol ValueDTO: Content {}
-
-struct ArrayDTO: ValueDTO {
+struct ArrayDTO: Content {
     var id: UUID?
     var array: [Decimal]
     var unit: UnitDTO?
@@ -37,7 +35,7 @@ struct ArrayDTO: ValueDTO {
     }
 }
 
-struct StringDTO: ValueDTO {
+struct StringDTO: Content {
     var id: UUID?
     var string: String
     
@@ -57,7 +55,7 @@ struct StringDTO: ValueDTO {
     }
 }
 
-struct DecimalDTO: ValueDTO {
+struct DecimalDTO: Content {
     var id: UUID?
     var decimal: Decimal
     var unit: UnitDTO?
@@ -85,7 +83,7 @@ struct DecimalDTO: ValueDTO {
     }
 }
 
-struct IntegerDTO: ValueDTO {
+struct IntegerDTO: Content {
     var id: UUID?
     var integer: Int
     var unit: UnitDTO?
@@ -109,6 +107,60 @@ struct IntegerDTO: ValueDTO {
             self.unit = UnitDTO(unit: unit)
         } else {
             self.unit = nil
+        }
+    }
+}
+
+enum ValueDTO: Content {
+    case array(ArrayDTO)
+    case string(StringDTO)
+    case integer(IntegerDTO)
+    case decimal(DecimalDTO)
+    
+    enum CodingKeys: String, CodingKey {
+        case type, data
+    }
+    
+    enum ResponseType: String, Codable {
+        case array, string, integer, decimal
+    }
+    
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        switch self {
+        case .array(let arrayDTO):
+            try container.encode(ResponseType.array, forKey: .type)
+            try container.encode(arrayDTO, forKey: .data)
+        case .string(let stringDTO):
+            try container.encode(ResponseType.string, forKey: .type)
+            try container.encode(stringDTO, forKey: .data)
+        case .integer(let integerDTO):
+            try container.encode(ResponseType.integer, forKey: .type)
+            try container.encode(integerDTO, forKey: .data)
+        case .decimal(let decimalDTO):
+            try container.encode(ResponseType.decimal, forKey: .type)
+            try container.encode(decimalDTO, forKey: .data)
+        }
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let type = try container.decode(ResponseType.self, forKey: .type)
+        
+        switch type {
+        case .array:
+            let dto = try container.decode(ArrayDTO.self, forKey: .data)
+            self = .array(dto)
+        case .string:
+            let dto = try container.decode(StringDTO.self, forKey: .data)
+            self = .string(dto)
+        case .integer:
+            let dto = try container.decode(IntegerDTO.self, forKey: .data)
+            self = .integer(dto)
+        case .decimal:
+            let dto = try container.decode(DecimalDTO.self, forKey: .data)
+            self = .decimal(dto)
         }
     }
 }

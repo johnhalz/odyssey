@@ -10,6 +10,6 @@ import Vapor
 
 struct RangeDTO: Content {
     var id: UUID?
-//    var lower: any ValueDTO
-//    var upper: any ValueDTO
+    var lower: ValueDTO
+    var upper: ValueDTO
 }
