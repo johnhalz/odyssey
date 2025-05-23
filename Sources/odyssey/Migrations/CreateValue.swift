@@ -26,6 +26,7 @@ extension Value {
                 .field("string", .string)
                 .field("decimal", .double)
                 .field("array", .array(of: .double))
+                .field("integer", .int32)
                 .field("unit_id", .uuid, .references(UnitRecord.schema, "id"))
                 .create()
         }

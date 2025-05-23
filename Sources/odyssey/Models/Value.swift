@@ -48,3 +48,22 @@ final class Value: Model, Content, @unchecked Sendable {
         self.$unit.id = unitID
     }
 }
+
+extension Value {
+    struct Create: Content {
+        var string: String?
+        var integer: Int?
+        var decimal: Decimal?
+        var array: [Decimal]?
+        var unit: UnitRecord?
+        
+        var hasOnlyOneNonNilValue: Bool {
+            let nonNilCount = [string as Any, integer as Any, decimal as Any, array as Any].compactMap { $0 }.count
+            return nonNilCount == 1
+        }
+    }
+}
+
+extension Value.Create: Validatable {
+    static func validations(_ validations: inout Validations) {}
+}

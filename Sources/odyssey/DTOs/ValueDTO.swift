@@ -163,4 +163,17 @@ enum ValueDTO: Content {
             self = .decimal(dto)
         }
     }
+    
+    init(value: Value) {
+        switch value.valueType {
+        case .array:
+            self = .array(.init(value: value))
+        case .decimal:
+            self = .decimal(.init(value: value))
+        case .integer:
+            self = .integer(.init(value: value))
+        case .string:
+            self = .string(.init(value: value))
+        }
+    }
 }
