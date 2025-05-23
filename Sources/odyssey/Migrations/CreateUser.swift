@@ -6,7 +6,6 @@
 //
 
 import Fluent
-import Vapor
 
 extension User {
     struct Migration: AsyncMigration {

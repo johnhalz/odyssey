@@ -93,7 +93,29 @@ func routes(_ app: Application) throws {
         return try await user.toGetUser(on: req.db)
     }
     
-//    let techRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["technician", "engineer"]))
-//    let customerRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["customer"]))
-//    let externalRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["external"]))
+    // MARK: - Techincal & Engineering related routes
+    let techRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["admin", "technician", "engineer"]))
+    
+    // Post new value
+    techRoutes.post("value") { req async throws -> ValueDTO in
+        let inputValue = try req.content.decode(ValueDTO.self)
+        let newValue: Value
+        
+        switch inputValue {
+        case .array(let arrayDTO):
+            newValue = Value(valueType: .array, array: arrayDTO.array)
+        case .decimal(let decimalDTO):
+            newValue = Value(valueType: .decimal, decimal: decimalDTO.decimal)
+        case .integer(let integerDTO):
+            newValue = Value(valueType: .integer, integer: integerDTO.integer)
+        case .string(let stringDTO):
+            newValue = Value(valueType: .string, string: stringDTO.string)
+        }
+        
+        try await newValue.create(on: req.db)
+        return ValueDTO(value: newValue)
+    }
+    
+//    let customerRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["admin", "customer"]))
+//    let externalRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["admin", "external"]))
 }
