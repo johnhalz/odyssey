@@ -9,15 +9,18 @@ import Fluent
 import Vapor
 
 struct UnitDTO: Content {
+    var id: UUID?
     var unitType: String
     var unitSymbol: String
 
-    init(unitType: String, unitSymbol: String, archivedUnit: String) {
+    init(id: UUID?, unitType: String, unitSymbol: String, archivedUnit: String) {
+        self.id = id
         self.unitType = unitType
         self.unitSymbol = unitSymbol
     }
 
     init(unit: UnitRecord) {
+        self.id = unit.id
         self.unitType = unit.unitType
         self.unitSymbol = unit.unitSymbol
     }
