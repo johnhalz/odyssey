@@ -104,10 +104,25 @@ func routes(_ app: Application) throws {
         switch inputValue {
         case .array(let arrayDTO):
             newValue = Value(valueType: .array, array: arrayDTO.array)
+            if let unitDTO = arrayDTO.unit {
+                let unitRecord = try await unitDTO.createRecordIfNeeded(on: req.db)
+                newValue.$unit.id = unitRecord.id
+            }
+            
         case .decimal(let decimalDTO):
             newValue = Value(valueType: .decimal, decimal: decimalDTO.decimal)
+            if let unitDTO = decimalDTO.unit {
+                let unitRecord = try await unitDTO.createRecordIfNeeded(on: req.db)
+                newValue.$unit.id = unitRecord.id
+            }
+            
         case .integer(let integerDTO):
             newValue = Value(valueType: .integer, integer: integerDTO.integer)
+            if let unitDTO = integerDTO.unit {
+                let unitRecord = try await unitDTO.createRecordIfNeeded(on: req.db)
+                newValue.$unit.id = unitRecord.id
+            }
+            
         case .string(let stringDTO):
             newValue = Value(valueType: .string, string: stringDTO.string)
         }

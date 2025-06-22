@@ -11,16 +11,17 @@ import Vapor
 extension UnitRecord {
     struct Migration: AsyncMigration {
         var name: String { "CreateUnitRecord" }
-        
+
         func prepare(on database: any Database) async throws {
             try await database.schema(UnitRecord.schema)
                 .id()
                 .field("unit_type", .string, .required)
                 .field("unit_symbol", .string, .required)
-                .field("archived_unit", .string, .required)
+                .unique(on: "unit_type")
+                .unique(on: "unit_symbol")
                 .create()
         }
-        
+
         func revert(on database: any Database) async throws {
             try await database.schema(UnitRecord.schema).delete()
         }
