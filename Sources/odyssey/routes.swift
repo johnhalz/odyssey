@@ -133,6 +133,10 @@ func routes(_ app: Application) throws {
         }
 
         try await newValue.create(on: req.db)
+        
+        // Load the unit relationship before creating the response
+        try await newValue.$unit.load(on: req.db)
+        
         return ValueDTO(value: newValue)
     }
 
