@@ -2,13 +2,13 @@ import Fluent
 import Vapor
 
 func routes(_ app: Application) throws {
-    
+
     let api = app.grouped("api")
-    
+
     api.get("ping") { req async -> String in
         "Odyssey 0.1.0 is running."
     }
-    
+
     // MARK: - Logging in with token
     let passwordProtected = api.grouped(User.authenticator())
     passwordProtected.post("login") { req async throws -> UserToken in
@@ -17,19 +17,19 @@ func routes(_ app: Application) throws {
         try await hashedToken.save(on: req.db)
         return rawToken
     }
-    
+
     // MARK: - Token Protected Group
     let tokenProtected = api.grouped(UserTokenAuthenticator())
-    
+
     // Get user details
     tokenProtected.get("me") { req async throws -> GetUser in
         let user = try req.auth.require(User.self)
         return try await user.toGetUser(on: req.db)
     }
-    
+
     // MARK: - Admin Routes
     let adminRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["admin"]))
-    
+
     // Set the user groups for a user
     adminRoutes.patch("user", "groups") { req async throws -> GetUser in
         let setGroups = try req.content.decode(SetUserGroups.self)
@@ -38,7 +38,7 @@ func routes(_ app: Application) throws {
         guard let user = try await User.find(setGroups.userID, on: req.db) else {
             throw Abort(.notFound, reason: "User not found")
         }
-        
+
         // Find all valid groups by name
         let validGroups = try await UserGroup.query(on: req.db)
             .filter(\.$name ~~ setGroups.groups)  // filter by the names from the input
@@ -47,7 +47,9 @@ func routes(_ app: Application) throws {
         // Check if there are any invalid groups and throw an error if all are invalid
         let validGroupNames = validGroups.map { $0.name }
         if validGroupNames.isEmpty {
-            throw Abort(.badRequest, reason: "Invalid group names: \(setGroups.groups.joined(separator: ", "))")
+            throw Abort(
+                .badRequest,
+                reason: "Invalid group names: \(setGroups.groups.joined(separator: ", "))")
         }
 
         // Set new groups
@@ -56,24 +58,24 @@ func routes(_ app: Application) throws {
 
         return try await user.toGetUser(on: req.db)
     }
-    
+
     // Create user with user group(s)
     adminRoutes.post("users") { req async throws -> GetUser in
         try User.Create.validate(content: req)
         let create = try req.content.decode(User.Create.self)
-        
+
         // Check password match
         guard create.password == create.confirmPassword else {
             throw Abort(.badRequest, reason: "Passwords did not match")
         }
-        
+
         let user = try User(
             firstName: create.firstName,
             lastName: create.lastName,
             email: create.email,
             passwordHash: Bcrypt.hash(create.password)
         )
-        
+
         // Query for the groups based on the provided names
         let validGroups = try await UserGroup.query(on: req.db)
             .filter(\.$name ~~ create.groups)  // Filter by names that match the provided groups
@@ -85,52 +87,55 @@ func routes(_ app: Application) throws {
 
         // If any invalid group names are found, throw an error
         if !invalidGroupNames.isEmpty {
-            throw Abort(.badRequest, reason: "Invalid group names: \(invalidGroupNames.joined(separator: ", "))")
+            throw Abort(
+                .badRequest,
+                reason: "Invalid group names: \(invalidGroupNames.joined(separator: ", "))")
         }
-        
+
         try await user.save(on: req.db)
         try await user.$groups.attach(validGroups, on: req.db)
         return try await user.toGetUser(on: req.db)
     }
-    
+
     // MARK: - Techincal & Engineering related routes
-    let techRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["admin", "technician", "engineer"]))
-    
+    let techRoutes = tokenProtected.grouped(
+        UserGroupGuardMiddleware(["admin", "technician", "engineer"])
+    )
+
     // Post new value
     techRoutes.post("value") { req async throws -> ValueDTO in
         let inputValue = try req.content.decode(ValueDTO.self)
+
+        // Helper function to get unit ID if unit exists
+        func getUnitID(from unitDTO: UnitDTO?) async throws -> UUID? {
+            guard let unitDTO = unitDTO else { return nil }
+            let unitRecord = try await unitDTO.createRecordIfNeeded(on: req.db)
+            return try unitRecord.requireID()
+        }
+
         let newValue: Value
-        
+
         switch inputValue {
         case .array(let arrayDTO):
-            newValue = Value(valueType: .array, array: arrayDTO.array)
-            if let unitDTO = arrayDTO.unit {
-                let unitRecord = try await unitDTO.createRecordIfNeeded(on: req.db)
-                newValue.$unit.id = unitRecord.id
-            }
-            
+            let unitID = try await getUnitID(from: arrayDTO.unit)
+            newValue = Value(valueType: .array, array: arrayDTO.array, unitID: unitID)
+
         case .decimal(let decimalDTO):
-            newValue = Value(valueType: .decimal, decimal: decimalDTO.decimal)
-            if let unitDTO = decimalDTO.unit {
-                let unitRecord = try await unitDTO.createRecordIfNeeded(on: req.db)
-                newValue.$unit.id = unitRecord.id
-            }
-            
+            let unitID = try await getUnitID(from: decimalDTO.unit)
+            newValue = Value(valueType: .decimal, decimal: decimalDTO.decimal, unitID: unitID)
+
         case .integer(let integerDTO):
-            newValue = Value(valueType: .integer, integer: integerDTO.integer)
-            if let unitDTO = integerDTO.unit {
-                let unitRecord = try await unitDTO.createRecordIfNeeded(on: req.db)
-                newValue.$unit.id = unitRecord.id
-            }
-            
+            let unitID = try await getUnitID(from: integerDTO.unit)
+            newValue = Value(valueType: .integer, integer: integerDTO.integer, unitID: unitID)
+
         case .string(let stringDTO):
             newValue = Value(valueType: .string, string: stringDTO.string)
         }
-        
+
         try await newValue.create(on: req.db)
         return ValueDTO(value: newValue)
     }
-    
-//    let customerRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["admin", "customer"]))
-//    let externalRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["admin", "external"]))
+
+    //    let customerRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["admin", "customer"]))
+    //    let externalRoutes = tokenProtected.grouped(UserGroupGuardMiddleware(["admin", "external"]))
 }
