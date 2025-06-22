@@ -25,20 +25,15 @@ struct UnitDTO: Content {
 
 extension UnitDTO {
     func createRecordIfNeeded(on database: any Database) async throws -> UnitRecord {
-        // Check if unit with same symbol already exists
-        if let existingBySymbol = try await UnitRecord.query(on: database)
-            .filter(\.$unitSymbol == self.unitSymbol)
-            .first() {
-            return existingBySymbol
-        }
-        
-        // Check if unit with same type already exists
-        if let existingByType = try await UnitRecord.query(on: database)
+        // Check if unit with same symbol and type already exists
+        if let existingUnit = try await UnitRecord.query(on: database)
             .filter(\.$unitType == self.unitType)
-            .first() {
-            return existingByType
+            .filter(\.$unitSymbol == self.unitSymbol)
+            .first()
+        {
+            return existingUnit
         }
-        
+
         // Create new if none found
         let newUnit = try UnitRecord(unitDTO: self)
         try await newUnit.create(on: database)

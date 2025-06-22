@@ -17,8 +17,6 @@ extension UnitRecord {
                 .id()
                 .field("unit_type", .string, .required)
                 .field("unit_symbol", .string, .required)
-                .unique(on: "unit_type")
-                .unique(on: "unit_symbol")
                 .create()
         }
 
