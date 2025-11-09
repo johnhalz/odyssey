@@ -20,25 +20,28 @@ final class Value: Model, Content, @unchecked Sendable {
 
     @Enum(key: "type")
     var valueType: ValueType
-    
+
     @Field(key: "string")
     var string: String?
-    
+
     @Field(key: "integer")
     var integer: Int?
-    
+
     @Field(key: "decimal")
     var decimal: Decimal?
-    
+
     @Field(key: "array")
     var array: [Decimal]?
-    
+
     @OptionalParent(key: "unit_id")
     var unit: UnitRecord?
-    
+
     init() {}
-    
-    init(id: UUID? = nil, valueType: ValueType, string: String? = nil, integer: Int? = nil, decimal: Decimal? = nil, array: [Decimal]? = nil, unitID: UnitRecord.IDValue? = nil) {
+
+    init(
+        id: UUID? = nil, valueType: ValueType, string: String? = nil, integer: Int? = nil,
+        decimal: Decimal? = nil, array: [Decimal]? = nil, unitID: UnitRecord.IDValue? = nil
+    ) {
         self.id = id
         self.valueType = valueType
         self.string = string
@@ -56,9 +59,10 @@ extension Value {
         var decimal: Decimal?
         var array: [Decimal]?
         var unit: UnitRecord?
-        
+
         var hasOnlyOneNonNilValue: Bool {
-            let nonNilCount = [string as Any, integer as Any, decimal as Any, array as Any].compactMap { $0 }.count
+            let nonNilCount = [string as Any, integer as Any, decimal as Any, array as Any]
+                .compactMap { $0 }.count
             return nonNilCount == 1
         }
     }

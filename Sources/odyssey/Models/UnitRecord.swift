@@ -20,27 +20,15 @@ final class UnitRecord: Model, Content, @unchecked Sendable {
     @Field(key: "unit_symbol")
     var unitSymbol: String
 
-    @Field(key: "archived_unit")
-    var archivedUnit: String
-
     init() {}
 
     init(unit: Unit) throws {
         self.unitType = String(describing: type(of: unit))
         self.unitSymbol = unit.symbol
-
-        let nsUnit = unit as Unit
-        let data = try NSKeyedArchiver.archivedData(withRootObject: nsUnit, requiringSecureCoding: true)
-        self.archivedUnit = data.base64EncodedString()
     }
-
-    func decodedUnit() throws -> Unit {
-        guard let data = Data(base64Encoded: archivedUnit) else {
-            throw Abort(.internalServerError, reason: "Invalid base64 for unit")
-        }
-        guard let nsUnit = try NSKeyedUnarchiver.unarchivedObject(ofClass: Unit.self, from: data) else {
-            throw Abort(.internalServerError, reason: "Failed to decode NSUnit")
-        }
-        return nsUnit
+    
+    init(unitDTO: UnitDTO) throws {
+        self.unitType = unitDTO.unitType
+        self.unitSymbol = unitDTO.unitSymbol
     }
 }

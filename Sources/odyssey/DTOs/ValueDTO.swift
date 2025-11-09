@@ -12,13 +12,13 @@ struct ArrayDTO: Content {
     var id: UUID?
     var array: [Decimal]
     var unit: UnitDTO?
-    
+
     init(id: UUID? = nil, array: [Decimal], unit: UnitDTO? = nil) {
         self.id = id
         self.array = array
         self.unit = unit
     }
-    
+
     init(value: Value) {
         self.id = value.id
         if let array = value.array {
@@ -26,7 +26,7 @@ struct ArrayDTO: Content {
         } else {
             self.array = []
         }
-        
+
         if let unit = value.unit {
             self.unit = UnitDTO(unit: unit)
         } else {
@@ -38,15 +38,15 @@ struct ArrayDTO: Content {
 struct StringDTO: Content {
     var id: UUID?
     var string: String
-    
+
     init(id: UUID? = nil, string: String) {
         self.id = id
         self.string = string
     }
-    
+
     init(value: Value) {
         self.id = value.id
-        
+
         if let string = value.string {
             self.string = string
         } else {
@@ -59,22 +59,22 @@ struct DecimalDTO: Content {
     var id: UUID?
     var decimal: Decimal
     var unit: UnitDTO?
-    
+
     init(id: UUID? = nil, decimal: Decimal, unit: UnitDTO? = nil) {
         self.id = id
         self.decimal = decimal
         self.unit = unit
     }
-    
+
     init(value: Value) {
         self.id = value.id
-        
+
         if let decimal = value.decimal {
             self.decimal = decimal
         } else {
             self.decimal = 0.0
         }
-        
+
         if let unit = value.unit {
             self.unit = UnitDTO(unit: unit)
         } else {
@@ -87,22 +87,22 @@ struct IntegerDTO: Content {
     var id: UUID?
     var integer: Int
     var unit: UnitDTO?
-    
+
     init(id: UUID? = nil, integer: Int, unit: UnitDTO? = nil) {
         self.id = id
         self.integer = integer
         self.unit = unit
     }
-    
+
     init(value: Value) {
         self.id = value.id
-        
+
         if let integer = value.integer {
             self.integer = integer
         } else {
             self.integer = 0
         }
-        
+
         if let unit = value.unit {
             self.unit = UnitDTO(unit: unit)
         } else {
@@ -116,18 +116,18 @@ enum ValueDTO: Content {
     case string(StringDTO)
     case integer(IntegerDTO)
     case decimal(DecimalDTO)
-    
+
     enum CodingKeys: String, CodingKey {
         case type, data
     }
-    
+
     enum ResponseType: String, Codable {
         case array, string, integer, decimal
     }
-    
+
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        
+
         switch self {
         case .array(let arrayDTO):
             try container.encode(ResponseType.array, forKey: .type)
@@ -143,11 +143,11 @@ enum ValueDTO: Content {
             try container.encode(decimalDTO, forKey: .data)
         }
     }
-    
+
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let type = try container.decode(ResponseType.self, forKey: .type)
-        
+
         switch type {
         case .array:
             let dto = try container.decode(ArrayDTO.self, forKey: .data)
@@ -163,7 +163,7 @@ enum ValueDTO: Content {
             self = .decimal(dto)
         }
     }
-    
+
     init(value: Value) {
         switch value.valueType {
         case .array:

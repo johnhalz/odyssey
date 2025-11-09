@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:odyssey}",
+            "name": "Debug odyssey",
+            "program": "${workspaceFolder:odyssey}/.build/debug/odyssey",
+            "preLaunchTask": "swift: Build Debug odyssey"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:odyssey}",
+            "name": "Release odyssey",
+            "program": "${workspaceFolder:odyssey}/.build/release/odyssey",
+            "preLaunchTask": "swift: Build Release odyssey"
+        }
+    ]
+}
