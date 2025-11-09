@@ -10,10 +10,10 @@ do {
     try await configure(app)
 
     // Revert all migrations first to ensure clean state
-    _ = try await app.autoRevert()
+    try await app.autoRevert().get()
 
     // Run migrations
-    _ = try await app.autoMigrate()
+    try await app.autoMigrate().get()
 
     // Run all tests
     print("Running Odyssey Tests...")
@@ -25,8 +25,9 @@ do {
     print("\n✅ All tests completed!")
 
     // Revert migrations after tests
-    _ = try await app.autoRevert()
+    try await app.autoRevert().get()
 
+    // Properly shutdown the application
     try await app.asyncShutdown()
 } catch {
     app.logger.report(error: error)
