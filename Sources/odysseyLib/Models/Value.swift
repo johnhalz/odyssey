@@ -8,37 +8,37 @@
 import Fluent
 import Vapor
 
-enum ValueType: String, Codable {
+public enum ValueType: String, Codable, Sendable {
     case string, integer, decimal, array
 }
 
-final class Value: Model, Content, @unchecked Sendable {
-    static let schema = "values"
+public final class Value: Model, Content, @unchecked Sendable {
+    public static let schema = "values"
 
     @ID(key: .id)
-    var id: UUID?
+    public var id: UUID?
 
     @Enum(key: "type")
-    var valueType: ValueType
+    public var valueType: ValueType
 
     @Field(key: "string")
-    var string: String?
+    public var string: String?
 
     @Field(key: "integer")
-    var integer: Int?
+    public var integer: Int?
 
     @Field(key: "decimal")
-    var decimal: Decimal?
+    public var decimal: Decimal?
 
     @Field(key: "array")
-    var array: [Decimal]?
+    public var array: [Decimal]?
 
     @OptionalParent(key: "unit_id")
-    var unit: UnitRecord?
+    public var unit: UnitRecord?
 
-    init() {}
+    public init() {}
 
-    init(
+    public init(
         id: UUID? = nil, valueType: ValueType, string: String? = nil, integer: Int? = nil,
         decimal: Decimal? = nil, array: [Decimal]? = nil, unitID: UnitRecord.IDValue? = nil
     ) {
@@ -53,14 +53,14 @@ final class Value: Model, Content, @unchecked Sendable {
 }
 
 extension Value {
-    struct Create: Content {
-        var string: String?
-        var integer: Int?
-        var decimal: Decimal?
-        var array: [Decimal]?
-        var unit: UnitRecord?
+    public struct Create: Content {
+        public var string: String?
+        public var integer: Int?
+        public var decimal: Decimal?
+        public var array: [Decimal]?
+        public var unit: UnitRecord?
 
-        var hasOnlyOneNonNilValue: Bool {
+        public var hasOnlyOneNonNilValue: Bool {
             let nonNilCount = [string as Any, integer as Any, decimal as Any, array as Any]
                 .compactMap { $0 }.count
             return nonNilCount == 1
@@ -69,5 +69,5 @@ extension Value {
 }
 
 extension Value.Create: Validatable {
-    static func validations(_ validations: inout Validations) {}
+    public static func validations(_ validations: inout Validations) {}
 }

@@ -8,30 +8,32 @@
 import Fluent
 import Vapor
 
-final class User: Model, Content, @unchecked Sendable {
-    static let schema = "users"
-    
+public final class User: Model, Content, @unchecked Sendable {
+    public static let schema = "users"
+
     @ID(key: .id)
-    var id: UUID?
-    
+    public var id: UUID?
+
     @Field(key: "first_name")
-    var firstName: String
-    
+    public var firstName: String
+
     @Field(key: "last_name")
-    var lastName: String
-    
+    public var lastName: String
+
     @Field(key: "email")
-    var email: String
-    
+    public var email: String
+
     @Field(key: "password_hash")
-    var passwordHash: String
-    
+    public var passwordHash: String
+
     @Siblings(through: UserGroupPivot.self, from: \.$user, to: \.$group)
-    var groups: [UserGroup]
-    
-    init() { }
-    
-    init(id: UUID? = nil, firstName: String, lastName: String, email: String, passwordHash: String) {
+    public var groups: [UserGroup]
+
+    public init() {}
+
+    public init(
+        id: UUID? = nil, firstName: String, lastName: String, email: String, passwordHash: String
+    ) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
@@ -41,18 +43,34 @@ final class User: Model, Content, @unchecked Sendable {
 }
 
 extension User {
-    struct Create: Content {
-        var firstName: String
-        var lastName: String
-        var email: String
-        var password: String
-        var confirmPassword: String
-        var groups: [String]
+    public struct Create: Content {
+        public var firstName: String
+        public var lastName: String
+        public var email: String
+        public var password: String
+        public var confirmPassword: String
+        public var groups: [String]
+
+        public init(
+            firstName: String,
+            lastName: String,
+            email: String,
+            password: String,
+            confirmPassword: String,
+            groups: [String]
+        ) {
+            self.firstName = firstName
+            self.lastName = lastName
+            self.email = email
+            self.password = password
+            self.confirmPassword = confirmPassword
+            self.groups = groups
+        }
     }
 }
 
 extension User.Create: Validatable {
-    static func validations(_ validations: inout Validations) {
+    public static func validations(_ validations: inout Validations) {
         validations.add("firstName", as: String.self, is: !.empty)
         validations.add("lastName", as: String.self, is: !.empty)
         validations.add("email", as: String.self, is: .email)
@@ -62,21 +80,21 @@ extension User.Create: Validatable {
 }
 
 extension User: ModelAuthenticatable {
-    static var usernameKey: KeyPath<User, Field<String>> {
+    public static var usernameKey: KeyPath<User, Field<String>> {
         \User.$email
     }
-    
-    static var passwordHashKey: KeyPath<User, Field<String>> {
+
+    public static var passwordHashKey: KeyPath<User, Field<String>> {
         \User.$passwordHash
     }
-    
-    func verify(password: String) throws -> Bool {
+
+    public func verify(password: String) throws -> Bool {
         try Bcrypt.verify(password, created: self.passwordHash)
     }
 }
 
 extension User {
-    func createToken() async throws -> (UserToken, UserToken) {
+    public func createToken() async throws -> (UserToken, UserToken) {
         let rawToken = [UInt8].random(count: 64).base64
         let prefix = String(rawToken.prefix(10))
         let hashedToken = try Bcrypt.hash(rawToken)
@@ -86,18 +104,18 @@ extension User {
             value: hashedToken,
             userID: try self.requireID()
         )
-        
+
         let rawUserToken = UserToken(
             tokenPrefix: prefix,
             value: rawToken,
             userID: try self.requireID()
         )
-        
+
         return (hashedUserToken, rawUserToken)
     }
-    
-    func toGetUser(on db: any Database) async throws -> GetUser {
-        try await self.$groups.load(on: db) // Load groups if not already loaded
+
+    public func toGetUser(on db: any Database) async throws -> GetUser {
+        try await self.$groups.load(on: db)  // Load groups if not already loaded
 
         return GetUser(
             id: self.id,

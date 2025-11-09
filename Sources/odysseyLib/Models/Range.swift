@@ -8,20 +8,20 @@
 import Fluent
 import Vapor
 
-final class Range: Model, Content, @unchecked Sendable {
-    static let schema = "ranges"
-    
+public final class Range: Model, Content, @unchecked Sendable {
+    public static let schema = "ranges"
+
     @ID(key: .id)
-    var id: UUID?
-    
+    public var id: UUID?
+
     @Parent(key: "lower_id")
     var lower: Value
-    
+
     @Parent(key: "upper_id")
     var upper: Value
-    
-    init() {}
-    
+
+    public init() {}
+
     init(id: UUID? = nil, lowerId: Value.IDValue, upperId: Value.IDValue) {
         self.id = id
         self.$lower.id = lowerId

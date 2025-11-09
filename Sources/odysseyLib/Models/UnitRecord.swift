@@ -5,29 +5,29 @@
 //  Created by John Halazonetis on 01.05.2025.
 //
 
-import Vapor
 import Fluent
+import Vapor
 
-final class UnitRecord: Model, Content, @unchecked Sendable {
-    static let schema = "unit_records"
+public final class UnitRecord: Model, Content, @unchecked Sendable {
+    public static let schema = "unit_records"
 
     @ID(key: .id)
-    var id: UUID?
+    public var id: UUID?
 
     @Field(key: "unit_type")
-    var unitType: String
+    public var unitType: String
 
     @Field(key: "unit_symbol")
-    var unitSymbol: String
+    public var unitSymbol: String
 
-    init() {}
+    public init() {}
 
-    init(unit: Unit) throws {
+    public init(unit: Unit) throws {
         self.unitType = String(describing: type(of: unit))
         self.unitSymbol = unit.symbol
     }
-    
-    init(unitDTO: UnitDTO) throws {
+
+    public init(unitDTO: UnitDTO) throws {
         self.unitType = unitDTO.unitType
         self.unitSymbol = unitDTO.unitSymbol
     }

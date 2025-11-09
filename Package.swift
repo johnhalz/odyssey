@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "odyssey",
     platforms: [
-       .macOS(.v13)
+        .macOS(.v13)
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
@@ -17,8 +17,8 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-nio.git", from: "2.65.0"),
     ],
     targets: [
-        .executableTarget(
-            name: "odyssey",
+        .target(
+            name: "odysseyLib",
             dependencies: [
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
@@ -28,17 +28,28 @@ let package = Package(
             ],
             swiftSettings: swiftSettings
         ),
-        .testTarget(
-            name: "odysseyTests",
+        .executableTarget(
+            name: "odyssey",
             dependencies: [
-                .target(name: "odyssey"),
-                .product(name: "VaporTesting", package: "vapor"),
+                .target(name: "odysseyLib")
             ],
             swiftSettings: swiftSettings
-        )
+        ),
+        .executableTarget(
+            name: "odysseyTests",
+            dependencies: [
+                .target(name: "odysseyLib"),
+                .product(name: "Vapor", package: "vapor"),
+                .product(name: "Fluent", package: "fluent"),
+            ],
+            exclude: ["README.md"],
+            swiftSettings: swiftSettings
+        ),
     ]
 )
 
-var swiftSettings: [SwiftSetting] { [
-    .enableUpcomingFeature("ExistentialAny"),
-] }
+var swiftSettings: [SwiftSetting] {
+    [
+        .enableUpcomingFeature("ExistentialAny")
+    ]
+}

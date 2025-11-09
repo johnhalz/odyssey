@@ -8,18 +8,18 @@
 import Fluent
 import Vapor
 
-struct UnitDTO: Content {
-    var id: UUID?
-    var unitType: String
-    var unitSymbol: String
+public struct UnitDTO: Content {
+    public var id: UUID?
+    public var unitType: String
+    public var unitSymbol: String
 
-    init(id: UUID?, unitType: String, unitSymbol: String, archivedUnit: String) {
+    public init(id: UUID?, unitType: String, unitSymbol: String, archivedUnit: String) {
         self.id = id
         self.unitType = unitType
         self.unitSymbol = unitSymbol
     }
 
-    init(unit: UnitRecord) {
+    public init(unit: UnitRecord) {
         self.id = unit.id
         self.unitType = unit.unitType
         self.unitSymbol = unit.unitSymbol
@@ -27,7 +27,7 @@ struct UnitDTO: Content {
 }
 
 extension UnitDTO {
-    func createRecordIfNeeded(on database: any Database) async throws -> UnitRecord {
+    public func createRecordIfNeeded(on database: any Database) async throws -> UnitRecord {
         // Check if unit with same symbol and type already exists
         if let existingUnit = try await UnitRecord.query(on: database)
             .filter(\.$unitType == self.unitType)

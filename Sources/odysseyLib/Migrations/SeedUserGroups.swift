@@ -11,7 +11,7 @@ struct SeedUserGroups: AsyncMigration {
     var name: String { "SeedUserGroups" }
 
     func prepare(on database: any Database) async throws {
-            let groupNames = ["admin", "engineer", "technician", "external", "customer"]
+            let groupNames = ["user", "admin", "engineer", "technician", "external", "customer"]
 
             for name in groupNames {
                 let exists = try await UserGroup.query(on: database)
@@ -26,7 +26,7 @@ struct SeedUserGroups: AsyncMigration {
         }
 
     func revert(on database: any Database) async throws {
-        let groupNames = ["admin", "engineer", "technician", "external", "customer"]
+        let groupNames = ["user", "admin", "engineer", "technician", "external", "customer"]
 
         try await UserGroup.query(on: database)
             .filter(\.$name ~~ groupNames)

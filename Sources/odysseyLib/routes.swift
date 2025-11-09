@@ -35,7 +35,7 @@ func routes(_ app: Application) throws {
         let setGroups = try req.content.decode(SetUserGroups.self)
 
         // Find the user to modify
-        guard let user = try await User.find(setGroups.userID, on: req.db) else {
+        guard let user = try await User.find(setGroups.userId, on: req.db) else {
             throw Abort(.notFound, reason: "User not found")
         }
 
@@ -133,10 +133,10 @@ func routes(_ app: Application) throws {
         }
 
         try await newValue.create(on: req.db)
-        
+
         // Load the unit relationship before creating the response
         try await newValue.$unit.load(on: req.db)
-        
+
         return ValueDTO(value: newValue)
     }
 

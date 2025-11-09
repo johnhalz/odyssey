@@ -8,18 +8,18 @@
 import Fluent
 import Vapor
 
-struct ArrayDTO: Content {
-    var id: UUID?
-    var array: [Decimal]
-    var unit: UnitDTO?
+public struct ArrayDTO: Content {
+    public var id: UUID?
+    public var array: [Decimal]
+    public var unit: UnitDTO?
 
-    init(id: UUID? = nil, array: [Decimal], unit: UnitDTO? = nil) {
+    public init(id: UUID? = nil, array: [Decimal], unit: UnitDTO? = nil) {
         self.id = id
         self.array = array
         self.unit = unit
     }
 
-    init(value: Value) {
+    public init(value: Value) {
         self.id = value.id
         if let array = value.array {
             self.array = array
@@ -35,16 +35,16 @@ struct ArrayDTO: Content {
     }
 }
 
-struct StringDTO: Content {
-    var id: UUID?
-    var string: String
+public struct StringDTO: Content {
+    public var id: UUID?
+    public var string: String
 
-    init(id: UUID? = nil, string: String) {
+    public init(id: UUID? = nil, string: String) {
         self.id = id
         self.string = string
     }
 
-    init(value: Value) {
+    public init(value: Value) {
         self.id = value.id
 
         if let string = value.string {
@@ -55,18 +55,18 @@ struct StringDTO: Content {
     }
 }
 
-struct DecimalDTO: Content {
-    var id: UUID?
-    var decimal: Decimal
-    var unit: UnitDTO?
+public struct DecimalDTO: Content {
+    public var id: UUID?
+    public var decimal: Decimal
+    public var unit: UnitDTO?
 
-    init(id: UUID? = nil, decimal: Decimal, unit: UnitDTO? = nil) {
+    public init(id: UUID? = nil, decimal: Decimal, unit: UnitDTO? = nil) {
         self.id = id
         self.decimal = decimal
         self.unit = unit
     }
 
-    init(value: Value) {
+    public init(value: Value) {
         self.id = value.id
 
         if let decimal = value.decimal {
@@ -83,18 +83,18 @@ struct DecimalDTO: Content {
     }
 }
 
-struct IntegerDTO: Content {
-    var id: UUID?
-    var integer: Int
-    var unit: UnitDTO?
+public struct IntegerDTO: Content {
+    public var id: UUID?
+    public var integer: Int
+    public var unit: UnitDTO?
 
-    init(id: UUID? = nil, integer: Int, unit: UnitDTO? = nil) {
+    public init(id: UUID? = nil, integer: Int, unit: UnitDTO? = nil) {
         self.id = id
         self.integer = integer
         self.unit = unit
     }
 
-    init(value: Value) {
+    public init(value: Value) {
         self.id = value.id
 
         if let integer = value.integer {
@@ -111,7 +111,7 @@ struct IntegerDTO: Content {
     }
 }
 
-enum ValueDTO: Content {
+public enum ValueDTO: Content {
     case array(ArrayDTO)
     case string(StringDTO)
     case integer(IntegerDTO)
@@ -121,11 +121,11 @@ enum ValueDTO: Content {
         case type, data
     }
 
-    enum ResponseType: String, Codable {
+    public enum ResponseType: String, Codable {
         case array, string, integer, decimal
     }
 
-    func encode(to encoder: any Encoder) throws {
+    public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         switch self {
@@ -144,7 +144,7 @@ enum ValueDTO: Content {
         }
     }
 
-    init(from decoder: any Decoder) throws {
+    public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let type = try container.decode(ResponseType.self, forKey: .type)
 
@@ -164,7 +164,7 @@ enum ValueDTO: Content {
         }
     }
 
-    init(value: Value) {
+    public init(value: Value) {
         switch value.valueType {
         case .array:
             self = .array(.init(value: value))
